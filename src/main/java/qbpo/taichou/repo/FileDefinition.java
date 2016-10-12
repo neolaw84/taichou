@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 
+import qbpo.taichou.Constants;
+
 @Entity
 public class FileDefinition {
 	

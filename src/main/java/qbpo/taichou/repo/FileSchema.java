@@ -13,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import qbpo.taichou.Constants;
+
 @Entity
 public class FileSchema {
 	

@@ -1,12 +1,18 @@
 package qbpo.taichou.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.metamodel.EntityType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +23,12 @@ import qbpo.taichou.repo.FileDefinition;
 import qbpo.taichou.repo.FileDefinitionRepo;
 import qbpo.taichou.repo.FileSchema;
 import qbpo.taichou.repo.FileSchemaRepo;
+import qbpo.taichou.repo.HelloTask;
+import qbpo.taichou.repo.Task;
 
 @Service
 @Transactional
-@EnableTransactionManagement
+//@EnableTransactionManagement
 public class FileSchemaService {
 
 	private static final Log log = LogFactory.getLog(FileSchemaService.class);
@@ -33,7 +41,7 @@ public class FileSchemaService {
 
 	@Autowired
 	FileDatasetRepo fileDatasetRepo;
-
+	
 	@Transactional(readOnly = true)
 	public List<FileSchema> getFileSchemas () {
 		List<FileSchema> answer = null;
