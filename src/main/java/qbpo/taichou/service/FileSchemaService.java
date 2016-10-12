@@ -60,7 +60,7 @@ public class FileSchemaService {
 		return FileSchema.newInstance();
 	}
 
-	@Transactional(readOnly = false)
+	@Transactional(readOnly = false, rollbackFor = Exception.class)
 	public FileSchema insert(FileSchema fileSchema) {
 
 		try {

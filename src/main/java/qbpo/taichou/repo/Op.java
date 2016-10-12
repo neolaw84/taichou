@@ -1,7 +1,12 @@
 package qbpo.taichou.repo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -14,6 +19,21 @@ import qbpo.taichou.Constants;
  */
 @Entity
 public class Op {
+	
+	public static Op newInstance(Task task) {
+		Op answer = new Op();
+		
+		answer.name = "";
+		answer.description = "";
+		answer.notes = "";
+		answer.taskClassName = task.getClass().getCanonicalName();
+		answer.moreNotes = new HashMap<>(4);
+		
+		answer.moreNotes.put("test", "test");
+		
+		return answer;
+	}
+	
 	@Id
 	@GeneratedValue
 	Long id;
@@ -30,6 +50,9 @@ public class Op {
 	@Column(length = Constants.MAX_NOTES_LENGTH)
 	String notes;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	Map<String, String> moreNotes;
+	
 	public Long getId() {
 		return id;
 	}
@@ -68,5 +91,13 @@ public class Op {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public Map<String, String> getMoreNotes() {
+		return moreNotes;
+	}
+
+	public void setMoreNotes(Map<String, String> moreNotes) {
+		this.moreNotes = moreNotes;
 	}
 }

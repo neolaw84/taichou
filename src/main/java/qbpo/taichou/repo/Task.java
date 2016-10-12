@@ -51,5 +51,5 @@ public abstract class Task {
 		this.description = description;
 	}
 	
-	public abstract Op getOp();
+	//public abstract Op getOp();
 }

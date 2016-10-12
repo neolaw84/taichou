@@ -17,6 +17,7 @@ import qbpo.taichou.Constants;
 import qbpo.taichou.repo.Op;
 import qbpo.taichou.repo.OpRepo;
 import qbpo.taichou.repo.Task;
+import qbpo.taichou.repo.TaskRepo;
 
 @Service
 @Transactional
@@ -26,6 +27,9 @@ public class WorkflowService {
 	
 	@Autowired
 	OpRepo opRepo;
+	
+	@Autowired
+	TaskRepo taskRepo; 
 	
 	@Value(Constants.OP_INIT_VALUE)
 	public boolean opInit;
@@ -41,7 +45,7 @@ public class WorkflowService {
 			for (Class<? extends Task> cl : taskClasses) {
 				try {
 					Task t = cl.newInstance();
-					Op op = t.getOp();
+					Op op = Op.newInstance(t);
 					if (op.getTaskClassName() == null
 							|| "".equals(op.getTaskClassName()))
 						op.setTaskClassName(t.getClass().getCanonicalName());
@@ -69,8 +73,8 @@ public class WorkflowService {
 			
 			answer = clazz.newInstance();
 			
-			answer.setName(op.getName() + " Task");
-			answer.setDescription(op.getDescription());
+			//answer.setName(op.getName() + " Task");
+			//answer.setDescription(op.getDescription());
 			
 		} catch (ClassNotFoundException e) {
 			Utils.logError(log, e, "Class not found while creating new task of op : " + op);
@@ -81,5 +85,23 @@ public class WorkflowService {
 		} 
 		
 		return answer;
+	}
+	
+	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	public Task insertTask(Task task) {
+		
+		try {
+			task = taskRepo.saveAndFlush(task);
+		} catch (Exception e) {
+			Utils.logError(log, e, "Unable to insert task : " + task);
+			throw e;
+		}
+		
+		return task; 
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Task> getTasks() {
+		return taskRepo.findAll();
 	}
 }
