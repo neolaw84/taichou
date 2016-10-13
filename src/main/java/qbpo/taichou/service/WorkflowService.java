@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qbpo.taichou.Constants;
-import qbpo.taichou.repo.FileDefinition;
 import qbpo.taichou.repo.Op;
 import qbpo.taichou.repo.Task;
 import qbpo.taichou.repo.TaskRepo;

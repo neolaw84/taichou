@@ -85,4 +85,9 @@ public class Workflow {
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
 	}
+
+	@Override
+	public String toString() {
+		return "Workflow [id=" + id + ", name=" + name + ", description=" + description + "]";
+	}
 }

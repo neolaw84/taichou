@@ -1,9 +1,8 @@
 package qbpo.taichou.service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +17,6 @@ import qbpo.taichou.repo.FileSchema;
 import qbpo.taichou.repo.HelloTask;
 import qbpo.taichou.repo.Task;
 import qbpo.taichou.repo.Workflow;
-import qbpo.taichou.service.FileSchemaService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -35,7 +33,7 @@ public class WorkflowServiceTest {
 	@Test
 	public void contextLoads() throws Exception {
 
-		/*FileSchema schema = fileSchemaService.createNewFileSchema();
+		FileSchema schema = fileSchemaService.createNewFileSchema();
 
 		schema.setName("HelloFileSchema")
 			.setDescription("FileSchema to test HelloWorkflow");
@@ -59,9 +57,9 @@ public class WorkflowServiceTest {
 		if (fileDefinition != null)
 			schema = fileDefinition.getFileSchema();
 
-		for (FileDefinition d : schema.getFileDefinitions()) {
+		/*for (FileDefinition d : schema.getFileDefinitions()) {
 			System.out.println(d);
-		}
+		}*/
 
 		log.info("Schema after file definition insertion : " + schema.toString());
 
@@ -98,17 +96,27 @@ public class WorkflowServiceTest {
 
 		Task task = workflowService.createNewTask(HelloTask.newInstance().getOp());
 
-		Map<String, FileDefinition> fds = new LinkedHashMap<>(4);
+		/*Map<String, FileDefinition> fds = new LinkedHashMap<>(4);
 		fds.put("names", fileDefinition);
 		fds.put("whatever", fileDefinition2);
 
-		task.setInputFileDefinitions(fds);
+		task.setInputFileDefinitions(fds);*/
+		
+		List<FileDefinition> fds = new LinkedList<>();
+		fds.add(fileDefinition);
+		fds.add(fileDefinition2);
 
+		task.setInputFileDefinitions(fds);
+		
+		task.getInputFileDefinitions().remove(1);
+		
 		((HelloTask) task).setLanguage("english");
 		
-		Map<String, FileDefinition> outFds = ((HelloTask) task).guessOutputFileDefinitions();
+		//Map<String, FileDefinition> outFds = ((HelloTask) task).guessOutputFileDefinitions();
+		List<FileDefinition> outFds = ((HelloTask) task).guessOutputFileDefinitions();
 		
-		for (FileDefinition fd : outFds.values()) {
+		//for (FileDefinition fd : outFds.values()) {
+		for (FileDefinition fd : outFds) {
 			fileSchemaService.insertFileDefinition(fd);
 		}
 		
@@ -121,20 +129,27 @@ public class WorkflowServiceTest {
 		
 		Task task2 = workflowService.createNewTask(HelloTask.newInstance().getOp());
 
-		Map<String, FileDefinition> fds2 = new LinkedHashMap<>(4);
+		/*Map<String, FileDefinition> fds2 = new LinkedHashMap<>(4);
 		fds2.put("names", fileDefinition);
+		
+		task2.setInputFileDefinitions(fds2);*/
+		
+		List<FileDefinition> fds2 = new LinkedList<>();
+		fds2.add(fileDefinition);
 		
 		task2.setInputFileDefinitions(fds2);
 
 		((HelloTask) task2).setLanguage("japanese");
 		
-		Map<String, FileDefinition> outFds2 = ((HelloTask) task2).guessOutputFileDefinitions();
+		//Map<String, FileDefinition> outFds2 = ((HelloTask) task2).guessOutputFileDefinitions();
+		List<FileDefinition> outFds2 = ((HelloTask) task2).guessOutputFileDefinitions();
 		
-		for (FileDefinition fd : outFds2.values()) {
+		//for (FileDefinition fd : outFds2.values()) {
+		for (FileDefinition fd : outFds2) {
 			fileSchemaService.insertFileDefinition(fd);
 		}
 		
-		task2.setOutputFileDefinitions(outFds);
+		task2.setOutputFileDefinitions(outFds2);
 		task2.setFileSchema(schema);
 		
 		//task2 = workflowService.insertTask(task2);
@@ -152,19 +167,29 @@ public class WorkflowServiceTest {
 		workflow.setFileSchema(schema);
 		workflow.setTasks(tasks);
 		
-		List<Task> tasks2 = new ArrayList<>();
+		/*List<Task> tasks2 = new ArrayList<>();
 		for (Task t : tasks) {
 			Task tt = workflowService.insertTask(t);
 			tasks2.add(tt);
-		}
+		}*/
 		
-		workflow.setTasks(tasks2);
+		//workflow.setTasks(tasks2);
 		
 		workflow = workflowService.insertWorkflow(workflow);
 		
 		workflow = workflowService.getWorkflow(workflow);
 		
-		log.info("Workflow inserted.");*/
+		log.info("Workflow inserted.");
+		
+		log.info("Inserted workflow : " + workflow);
+		
+		log.info("Workflow's Tasks are : ");
+		
+		for (Task t : workflow.getTasks()) {
+			log.info("Task : " + task);
+			log.info("Input File Definition : " + t.getInputFileDefinitions());
+			log.info("Output File Definition : " + t.getOutputFileDefinitions());
+		}
 	}
 
 }

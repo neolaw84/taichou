@@ -1,11 +1,8 @@
 package qbpo.taichou.repo;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -56,11 +53,11 @@ public abstract class Task {
 	@LazyCollection(LazyCollectionOption.FALSE)
 	Map<String, FileDefinition> outputFileDefinitions;*/
 	
-	@ManyToMany(cascade = CascadeType.MERGE)
+	@ManyToMany
 	@LazyCollection(LazyCollectionOption.FALSE)
 	List<FileDefinition> inputFileDefinitions;
 	
-	@ManyToMany(cascade = CascadeType.MERGE)
+	@ManyToMany
 	@LazyCollection(LazyCollectionOption.FALSE)
 	List<FileDefinition> outputFileDefinitions;
 	
