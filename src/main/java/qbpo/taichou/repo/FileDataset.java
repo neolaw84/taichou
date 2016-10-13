@@ -2,6 +2,7 @@ package qbpo.taichou.repo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -39,7 +40,7 @@ public class FileDataset {
 	@Column(length = Constants.MAX_DESCRIPTION_LENGTH)
 	String description;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
 	FileSchema fileSchema;
 

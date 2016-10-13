@@ -3,18 +3,10 @@ package qbpo.taichou.service;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.metamodel.EntityType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaContext;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import qbpo.taichou.repo.FileDataset;
@@ -23,12 +15,8 @@ import qbpo.taichou.repo.FileDefinition;
 import qbpo.taichou.repo.FileDefinitionRepo;
 import qbpo.taichou.repo.FileSchema;
 import qbpo.taichou.repo.FileSchemaRepo;
-import qbpo.taichou.repo.HelloTask;
-import qbpo.taichou.repo.Task;
 
 @Service
-@Transactional
-//@EnableTransactionManagement
 public class FileSchemaService {
 
 	private static final Log log = LogFactory.getLog(FileSchemaService.class);
@@ -56,12 +44,12 @@ public class FileSchemaService {
 		return answer;
 	}
 
-	public FileSchema createNew() {
+	public FileSchema createNewFileSchema() {
 		return FileSchema.newInstance();
 	}
 
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
-	public FileSchema insert(FileSchema fileSchema) {
+	public FileSchema insertFileSchema(FileSchema fileSchema) {
 
 		try {
 			fileSchema = fileSchemaRepo.saveAndFlush(fileSchema);
@@ -82,23 +70,19 @@ public class FileSchemaService {
 		return fileSchema;
 	}
 
-	public FileDefinition createNewFileDefinition() {
-		return FileDefinition.newInstance();
-	}
-
 	public FileDefinition createNewFileDefinition(FileSchema fileSchema) {
 		return FileDefinition.newInstance(fileSchema);
 	}
 
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
 	public FileDefinition insertFileDefinition(FileDefinition fileDefinition) throws Exception  {
+		if (fileDefinition.getId() != null
+				&& fileDefinitionRepo.exists(fileDefinition.getId())) {
+			Exception e = Utils.createAndLogError(log, "File Definition already exists.");
+			throw e;
+		}
+		
 		try {
-
-			if (fileDefinition.getId() != null
-					&& fileDefinitionRepo.exists(fileDefinition.getId())) {
-				Exception e = Utils.createAndLogError(log, "File Definition already exists.");
-				throw e;
-			}
 			
 			FileSchema fileSchema = fileDefinition.getFileSchema(); 
 
@@ -130,12 +114,11 @@ public class FileSchemaService {
 
 	@Transactional(rollbackFor=Exception.class)
 	public FileDefinition updateFileDefinition(FileDefinition fileDefinition) throws Exception {
+		if (!fileDefinitionRepo.exists(fileDefinition.getId())) {
+			Exception e = Utils.createAndLogError(log, "File Schema does not contains File Definition.");
+			throw e;
+		}
 		try {
-
-			if (!fileDefinitionRepo.exists(fileDefinition.getId())) {
-				Exception e = Utils.createAndLogError(log, "File Schema does not contains File Definition.");
-				throw e;
-			}
 
 			fileDefinition = fileDefinitionRepo.save(fileDefinition);
 
@@ -149,6 +132,7 @@ public class FileSchemaService {
 		return fileDefinition;
 	}
 	
+	@Transactional(readOnly = true)
 	public FileDefinition getFileDefinition(FileDefinition fileDefinition) {
 		if (fileDefinition.getId() == null)
 			return null;
@@ -162,15 +146,16 @@ public class FileSchemaService {
 		return FileDataset.newInstance(fileSchema);
 	}
 
+	@Transactional(readOnly = false)
 	public FileDataset insertFileDataset(FileDataset fileDataset) throws Exception {
+		if (fileDataset.getId() != null
+				&& fileDatasetRepo.exists(fileDataset.getId())) {
+			Exception e = Utils.createAndLogError(log, "File Dataset already exists.");
+			throw e;
+		}
+		
 		try {
 
-			if (fileDataset.getId() != null
-					&& fileDatasetRepo.exists(fileDataset.getId())) {
-				Exception e = Utils.createAndLogError(log, "File Dataset already exists.");
-				throw e;
-			}
-			
 			FileSchema fileSchema = fileDataset.getFileSchema(); 
 
 			fileSchema = fileSchemaRepo.findOne(fileSchema.getId());
@@ -199,13 +184,13 @@ public class FileSchemaService {
 		return fileDataset;
 	}
 
+	@Transactional(readOnly = false)
 	public FileDataset updateFileDataset(FileDataset fileDataset) throws Exception {
+		if (!fileDatasetRepo.exists(fileDataset.getId())) {
+			Exception e = Utils.createAndLogError(log, "File Schema does not contains File Dataset.");
+			throw e;
+		}
 		try {
-
-			if (!fileDatasetRepo.exists(fileDataset.getId())) {
-				Exception e = Utils.createAndLogError(log, "File Schema does not contains File Dataset.");
-				throw e;
-			}
 
 			fileDataset = fileDatasetRepo.save(fileDataset);
 
@@ -221,6 +206,7 @@ public class FileSchemaService {
 		return fileDataset;
 	}
 
+	@Transactional(readOnly = true)
 	public FileDataset getFileDataset(FileDataset fileDataset) {
 		if (fileDataset.getId() == null)
 			return null;

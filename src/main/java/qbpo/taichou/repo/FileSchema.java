@@ -59,32 +59,36 @@ public class FileSchema {
 		return name;
 	}
 
-	public void setName(String name) {
+	public FileSchema setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public Set<FileDefinition> getFileDefinitions() {
 		return fileDefinitions;
 	}
 
-	public void setFileDefinitions(Set<FileDefinition> fileDefinitions) {
+	public FileSchema setFileDefinitions(Set<FileDefinition> fileDefinitions) {
 		this.fileDefinitions = fileDefinitions;
+		return this;
 	}
 
 	public Set<FileDataset> getFileDatasets() {
 		return fileDatasets;
 	}
 
-	public void setFileDatasets(Set<FileDataset> fileDatasets) {
+	public FileSchema setFileDatasets(Set<FileDataset> fileDatasets) {
 		this.fileDatasets = fileDatasets;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public FileSchema setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	@Override

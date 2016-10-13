@@ -3,14 +3,11 @@ package qbpo.taichou.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import qbpo.taichou.repo.FileDefinition;
 import qbpo.taichou.repo.FileSchema;
-import qbpo.taichou.service.FileSchemaService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -21,12 +18,12 @@ public class FileSchemaServiceTest {
 	
 	@Test
 	public void contextLoads() throws Exception {
-		FileSchema schema = fileSchemaService.createNew();
+		FileSchema schema = fileSchemaService.createNewFileSchema();
 		
 		schema.setName("Test Schema");
 		schema.setDescription("Test Description");
 		
-		schema = fileSchemaService.insert(schema);
+		schema = fileSchemaService.insertFileSchema(schema);
 		
 		System.out.println("Schema after insert : " + schema.toString());
 		

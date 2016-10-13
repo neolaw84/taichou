@@ -15,6 +15,12 @@ public class Constants {
 	
 	public static final String FK_FILE_SCHEMA = "fileSchema";
 	
+	public static final String IND_FILE_SCHEMA = "file_schema";
+	
+	public static final String FK_FILE_DATASET = "fileDataset";
+	
+	public static final String FK_FILE_DEFINITION = "fileDefinition";
+	
 	public static final int INIT_NUM_OF_FILE_DEFINITIONS_PER_SCHEMA = 2;
 	
 	public static final int INIT_NUM_OF_FILE_DATASETS_PER_SCHEMA = 2;

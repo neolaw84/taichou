@@ -1,66 +1,25 @@
 package qbpo.taichou.repo;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-import qbpo.taichou.Constants;
-
 /**
+ * An Op is basically a Task template.
  * Op is considered constant throughout runtime.
+ * Therefore, it is not to be init through a json file.
+ * It also is not persisted in the database.
  * @author neolaw
  *
  */
-@Entity
 public class Op {
 	
-	public static Op newInstance(Task task) {
-		Op answer = new Op();
-		
-		answer.name = "";
-		answer.description = "";
-		answer.notes = "";
-		answer.taskClassName = task.getClass().getCanonicalName();
-		answer.moreNotes = new HashMap<>(4);
-		
-		answer.moreNotes.put("test", "test");
-		
-		return answer;
-	}
-	
-	@Id
-	@GeneratedValue
-	Long id;
-	
-	@Column
 	String name;
 	
-	@Column(length = Constants.MAX_DESCRIPTION_LENGTH)
 	String description;
 	
-	@Column
 	String taskClassName;
 	
-	@Column(length = Constants.MAX_NOTES_LENGTH)
-	String notes;
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	Map<String, String> moreNotes;
+	Map<String, String> notes;
 	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -85,19 +44,11 @@ public class Op {
 		this.taskClassName = className;
 	}
 
-	public String getNotes() {
+	public Map<String, String> getNotes() {
 		return notes;
 	}
 
-	public void setNotes(String notes) {
+	public void setNotes(Map<String, String> notes) {
 		this.notes = notes;
-	}
-
-	public Map<String, String> getMoreNotes() {
-		return moreNotes;
-	}
-
-	public void setMoreNotes(Map<String, String> moreNotes) {
-		this.moreNotes = moreNotes;
 	}
 }

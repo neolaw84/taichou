@@ -56,7 +56,7 @@ public class FileDefinition {
 	@Column(length = Constants.MAX_DESCRIPTION_LENGTH)
 	String description;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
 	FileSchema fileSchema;
 	
@@ -75,48 +75,54 @@ public class FileDefinition {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public FileDefinition setId(Long id) {
 		this.id = id;
+		return this;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public FileDefinition setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public FileDefinition setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	public FileSchema getFileSchema() {
 		return fileSchema;
 	}
 
-	public void setFileSchema(FileSchema fileSchema) {
+	public FileDefinition setFileSchema(FileSchema fileSchema) {
 		this.fileSchema = fileSchema;
+		return this;
 	}
 
 	public Type getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public FileDefinition setType(Type type) {
 		this.type = type;
+		return this;
 	}
 
 	public List<String> getColumns() {
 		return columns;
 	}
 
-	public void setColumns(List<String> columns) {
+	public FileDefinition setColumns(List<String> columns) {
 		this.columns = columns;
+		return this;
 	}
 
 	@Override

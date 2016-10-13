@@ -16,13 +16,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("taichou/schema")
 public class SchemaController {
-	public List<String> listSchemas() {
-		List<String> answer = new LinkedList();
-		
-		// hard-coding for now
-		
-		
-		
-		return answer;
-	}
+	
 }
