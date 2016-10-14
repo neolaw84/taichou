@@ -21,11 +21,6 @@ import qbpo.taichou.Constants;
 @Entity
 @Table(indexes = {@Index(columnList = Constants.IND_FILE_SCHEMA)})
 public class Workflow {
-	public static final Workflow newInstance() {
-		Workflow answer = new Workflow();
-		
-		return answer;
-	}
 	
 	@Id
 	@GeneratedValue

@@ -1,16 +1,78 @@
 package qbpo.taichou.service;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.builder.SimpleJobBuilder;
+import org.springframework.batch.core.launch.NoSuchJobException;
+
+import qbpo.taichou.Constants;
+import qbpo.taichou.repo.Task;
+import qbpo.taichou.repo.TaskStep;
+import qbpo.taichou.repo.Workflow;
+import qbpo.taichou.repo.WorkflowExecution;
 
 public class Utils {
-	public static void logError(Log log, Exception e, String message) {
+	static void logError(Log log, Exception e, String message) {
 		log.error(message);
 		log.error(e.getStackTrace());
 	}
-	
-	public static Exception createAndLogError(Log log, String message) {
+
+	static Exception createAndLogError(Log log, String message) {
 		Exception e = new Exception(message);
 		logError(log, e, message);
 		return e;
+	}
+
+	static Job buildJob(Workflow workflow, 
+			JobBuilderFactory jobBuilderFactory,
+			JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor,
+			StepBuilderFactory stepBuilderFactory) {
+		List<Task> tasks = workflow.getTasks();
+		String jobId = Long.toString(workflow.getId());
+		JobBuilder jBuilder = jobBuilderFactory.get(jobId);
+
+		SimpleJobBuilder sjb = null;
+
+		//int engineSequence = 0;
+		for (Task task : tasks) {
+			Step step = buildStep(task, stepBuilderFactory); // get a step
+
+			if (sjb == null)
+				sjb = jBuilder.start(step);
+			else
+				sjb.next(step);
+			//engineSequence = engineSequence + 1;
+		}
+
+		Job j = sjb.build();
+		jobRegistryBeanPostProcessor.postProcessAfterInitialization(j, jobId);
+		return j;
+	}
+
+	static Step buildStep(Task task, StepBuilderFactory stepBuilderFactory) {
+		return stepBuilderFactory.get(Long.toString(task.getId()))
+				.tasklet(new TaskStep())
+		.build();
+	}
+
+	static JobParameters buildJobParameter(WorkflowExecution workflowExecution) {
+		JobParametersBuilder jobParameterBuilder = new JobParametersBuilder();
+
+		JobParameters answer = jobParameterBuilder
+				.addLong(Constants.TIME_STAMP, System.currentTimeMillis())
+				.addLong(Constants.FILE_DATASET_ID, workflowExecution.getFileDataset().getId())
+				.toJobParameters();
+		
+		return answer;
 	}
 }

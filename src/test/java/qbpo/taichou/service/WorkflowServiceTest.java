@@ -57,10 +57,6 @@ public class WorkflowServiceTest {
 		if (fileDefinition != null)
 			schema = fileDefinition.getFileSchema();
 
-		/*for (FileDefinition d : schema.getFileDefinitions()) {
-			System.out.println(d);
-		}*/
-
 		log.info("Schema after file definition insertion : " + schema.toString());
 
 		fileDefinition.setName("names");
@@ -90,19 +86,13 @@ public class WorkflowServiceTest {
 		for (FileDefinition d : schema.getFileDefinitions())
 			log.info(d.toString());
 
-		//////////////////////////////////////
 		
 		log.info("Testing schema done.");
+		//////////////////////////////////////
 
 		Task task = workflowService.createNewTask(HelloTask.newInstance().getOp());
-
-		/*Map<String, FileDefinition> fds = new LinkedHashMap<>(4);
-		fds.put("names", fileDefinition);
-		fds.put("whatever", fileDefinition2);
-
-		task.setInputFileDefinitions(fds);*/
 		
-		List<FileDefinition> fds = new LinkedList<>();
+		List<FileDefinition> fds = new ArrayList<>();
 		fds.add(fileDefinition);
 		fds.add(fileDefinition2);
 
@@ -156,7 +146,7 @@ public class WorkflowServiceTest {
 		
 		log.info("Second task initialized.");
 		
-		Workflow workflow = Workflow.newInstance();
+		Workflow workflow = workflowService.createNewWorkflow();
 
 		List<Task> tasks = new ArrayList<>(2);
 		tasks.add(task);
@@ -166,14 +156,6 @@ public class WorkflowServiceTest {
 		workflow.setDescription("Workflow to test Hello Task");
 		workflow.setFileSchema(schema);
 		workflow.setTasks(tasks);
-		
-		/*List<Task> tasks2 = new ArrayList<>();
-		for (Task t : tasks) {
-			Task tt = workflowService.insertTask(t);
-			tasks2.add(tt);
-		}*/
-		
-		//workflow.setTasks(tasks2);
 		
 		workflow = workflowService.insertWorkflow(workflow);
 		
@@ -189,6 +171,12 @@ public class WorkflowServiceTest {
 			log.info("Task : " + task);
 			log.info("Input File Definition : " + t.getInputFileDefinitions());
 			log.info("Output File Definition : " + t.getOutputFileDefinitions());
+		}
+		
+		schema = fileSchemaService.getFileSchema(schema);
+		
+		for (FileDefinition fd : schema.getFileDefinitions()) {
+			log.info("File definition : " + fd.toString());
 		}
 	}
 

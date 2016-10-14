@@ -13,6 +13,8 @@ public class Constants {
 	
 	public static final int MAX_NOTES_LENGTH = 512;
 	
+	public static final int MAX_OUTPUT_LENGTH = 1024;
+	
 	public static final String FK_FILE_SCHEMA = "fileSchema";
 	
 	public static final String IND_FILE_SCHEMA = "file_schema";
@@ -20,6 +22,10 @@ public class Constants {
 	public static final String FK_FILE_DATASET = "fileDataset";
 	
 	public static final String FK_FILE_DEFINITION = "fileDefinition";
+	
+	public static final String FILE_DATASET_ID = "file-dataset-id";
+	
+	public static final String TIME_STAMP = "time-stamp";
 	
 	public static final int INIT_NUM_OF_FILE_DEFINITIONS_PER_SCHEMA = 2;
 	

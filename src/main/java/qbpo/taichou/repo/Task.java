@@ -41,18 +41,6 @@ public abstract class Task {
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	FileSchema fileSchema;
 	
-	/*@Enumerated(EnumType.STRING)
-	@ManyToOne(fetch = FetchType.EAGER, optional = true)
-	FileDataset fileDataset;*/
-	
-	/*@ElementCollection
-	@LazyCollection(LazyCollectionOption.FALSE)
-	Map<String, FileDefinition> inputFileDefinitions;
-	
-	@ElementCollection
-	@LazyCollection(LazyCollectionOption.FALSE)
-	Map<String, FileDefinition> outputFileDefinitions;*/
-	
 	@ManyToMany
 	@LazyCollection(LazyCollectionOption.FALSE)
 	List<FileDefinition> inputFileDefinitions;
@@ -92,30 +80,6 @@ public abstract class Task {
 	public void setFileSchema(FileSchema fileSchema) {
 		this.fileSchema = fileSchema;
 	}
-
-	/*public FileDataset getFileDataset() {
-		return fileDataset;
-	}
-
-	public void setFileDataset(FileDataset fileDataset) {
-		this.fileDataset = fileDataset;
-	}*/
-
-	/*public Map<String, FileDefinition> getInputFileDefinitions() {
-		return inputFileDefinitions;
-	}
-
-	public void setInputFileDefinitions(Map<String, FileDefinition> fileDefinitions) {
-		this.inputFileDefinitions = fileDefinitions;
-	}
-	
-	public Map<String, FileDefinition> getOutputFileDefinitions() {
-		return outputFileDefinitions;
-	}
-
-	public void setOutputFileDefinitions(Map<String, FileDefinition> outputFileDefinitions) {
-		this.outputFileDefinitions = outputFileDefinitions;
-	}*/
 	
 	public abstract Op getOp();
 	
@@ -135,6 +99,5 @@ public abstract class Task {
 		this.outputFileDefinitions = outputFileDefinitions;
 	}
 
-	//public abstract Map<String, FileDefinition> guessOutputFileDefinitions();
 	public abstract List<FileDefinition> guessOutputFileDefinitions();
 }
