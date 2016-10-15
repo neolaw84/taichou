@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import qbpo.taichou.repo.FileDataset;
 import qbpo.taichou.repo.FileDefinition;
 import qbpo.taichou.repo.FileSchema;
 import qbpo.taichou.repo.HelloTask;
 import qbpo.taichou.repo.Task;
 import qbpo.taichou.repo.Workflow;
+import qbpo.taichou.repo.WorkflowExecution;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,6 +31,9 @@ public class WorkflowServiceTest {
 
 	@Autowired
 	FileSchemaService fileSchemaService;
+	
+	@Autowired
+	ExecutionService executionService;
 
 	@Test
 	public void contextLoads() throws Exception {
@@ -85,6 +90,17 @@ public class WorkflowServiceTest {
 		
 		for (FileDefinition d : schema.getFileDefinitions())
 			log.info(d.toString());
+		
+		FileDataset fileDataset = fileSchemaService.createNewFileDataset(schema);
+		
+		fileDataset.setDescription("File dataset to test Hello workflow");
+		fileDataset.setFileSchema(schema);
+		fileDataset.setName("Hello Dataset");
+		fileDataset.setPath("/media/sf_Shared/workspace/taichou/");
+		
+		fileDataset = fileSchemaService.insertFileDataset(fileDataset);
+		
+		fileDataset = fileSchemaService.getFileDataset(fileDataset);
 
 		
 		log.info("Testing schema done.");
@@ -178,6 +194,14 @@ public class WorkflowServiceTest {
 		for (FileDefinition fd : schema.getFileDefinitions()) {
 			log.info("File definition : " + fd.toString());
 		}
+		
+		//////////////////////////////////////////////
+		
+		WorkflowExecution workflowExecution = executionService.queue(workflow, fileDataset);
+		
+		// need to wait until all jobs finished.
+		
+		Thread.sleep(10000L);
 	}
 
 }

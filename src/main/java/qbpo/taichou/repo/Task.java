@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

@@ -23,7 +23,9 @@ public class Constants {
 	
 	public static final String FK_FILE_DEFINITION = "fileDefinition";
 	
-	public static final String FILE_DATASET_ID = "file-dataset-id";
+	public static final String WORKFLOW_EXECUTION_ID = "workflow-execution-id";
+	
+	public static final String FILE_DATASET_PATH = "file-dataset-path";
 	
 	public static final String TIME_STAMP = "time-stamp";
 	

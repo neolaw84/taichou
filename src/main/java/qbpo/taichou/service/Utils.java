@@ -7,17 +7,14 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.builder.SimpleJobBuilder;
-import org.springframework.batch.core.launch.NoSuchJobException;
 
 import qbpo.taichou.Constants;
 import qbpo.taichou.repo.Task;
-import qbpo.taichou.repo.TaskStep;
 import qbpo.taichou.repo.Workflow;
 import qbpo.taichou.repo.WorkflowExecution;
 
@@ -36,7 +33,8 @@ public class Utils {
 	static Job buildJob(Workflow workflow, 
 			JobBuilderFactory jobBuilderFactory,
 			JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor,
-			StepBuilderFactory stepBuilderFactory) {
+			StepBuilderFactory stepBuilderFactory,
+			ExecutionService executionService) {
 		List<Task> tasks = workflow.getTasks();
 		String jobId = Long.toString(workflow.getId());
 		JobBuilder jBuilder = jobBuilderFactory.get(jobId);
@@ -51,8 +49,9 @@ public class Utils {
 				sjb = jBuilder.start(step);
 			else
 				sjb.next(step);
-			//engineSequence = engineSequence + 1;
 		}
+		
+		sjb.listener(executionService);
 
 		Job j = sjb.build();
 		jobRegistryBeanPostProcessor.postProcessAfterInitialization(j, jobId);
@@ -70,9 +69,27 @@ public class Utils {
 
 		JobParameters answer = jobParameterBuilder
 				.addLong(Constants.TIME_STAMP, System.currentTimeMillis())
-				.addLong(Constants.FILE_DATASET_ID, workflowExecution.getFileDataset().getId())
+				.addLong(Constants.WORKFLOW_EXECUTION_ID, workflowExecution.getId())
 				.toJobParameters();
 		
 		return answer;
+	}
+	
+	static String tail(String data, int maxLength) {
+		if (data.length() > maxLength)
+			data = data.substring(data.length() - maxLength + 1);
+		
+		return data;
+	}
+	
+	static String appendAndTail(String data, String toAppend, int maxLength) {
+		StringBuilder answerBuilder = new StringBuilder(data);
+
+		answerBuilder = answerBuilder.append(System.lineSeparator()).append(toAppend);
+
+		if (answerBuilder.length() > maxLength)
+			answerBuilder.substring(answerBuilder.length() - maxLength + 1);
+		
+		return answerBuilder.toString();
 	}
 }

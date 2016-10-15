@@ -12,29 +12,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reflections.Reflections;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
-import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.job.builder.SimpleJobBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +38,7 @@ import qbpo.taichou.repo.WorkflowExecutionRepo;
 import qbpo.taichou.repo.WorkflowRepo;
 
 @Service
+@EnableBatchProcessing
 public class WorkflowService {
 
 	private static final Log log = LogFactory.getLog(WorkflowService.class);
@@ -71,7 +57,7 @@ public class WorkflowService {
 	@Autowired
 	WorkflowExecutionRepo workflowExecutionRepo;
 
-	//////////////////// -- Batch -- //////////////////////////////////
+	//////////////////////////////////////////////////////////
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
@@ -80,35 +66,23 @@ public class WorkflowService {
 	private StepBuilderFactory stepBuilderFactory;
 
 	@Autowired
-	private JobRepository jobRepository;
-
-	@Autowired
-	@Qualifier("asyncJobLauncher")
-	private JobLauncher jobLauncher;
-
-	@Autowired
 	private JobRegistry jobRegistry;
-
+	
 	@Autowired
-	@Qualifier("customJobRegistryBeanPostProcessor")
-	private JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor;
+	private ExecutionService executionService;
+
+	//@Autowired
+	//@Qualifier("customJobRegistryBeanPostProcessor")
+	//private JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor;
 
 	@Bean
-	public JobLauncher asyncJobLauncher() {
-		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
-		jobLauncher.setJobRepository(jobRepository);
-		jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
-		return jobLauncher;
-	}
-
-	@Bean
-	public JobRegistryBeanPostProcessor customJobRegistryBeanPostProcessor() {
+	public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() {
 		JobRegistryBeanPostProcessor bpp = new JobRegistryBeanPostProcessor();
 		bpp.setJobRegistry(jobRegistry);
 		return bpp;
 	}
 
-	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////
 
 	@PostConstruct
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
@@ -234,7 +208,8 @@ public class WorkflowService {
 			workflowRepo.saveAndFlush(workflow);
 
 			Job j = Utils.buildJob(workflow, jobBuilderFactory, 
-					jobRegistryBeanPostProcessor, stepBuilderFactory);
+					jobRegistryBeanPostProcessor(), stepBuilderFactory,
+					executionService);
 
 		} catch (Exception e) {
 			Utils.logError(log, e, "Unable to insert workflow : " + workflow);
@@ -254,43 +229,13 @@ public class WorkflowService {
 		return answer;
 	}
 
-	private JobExecution startJobExecution (WorkflowExecution workflowExecution) 
-			throws JobExecutionException {
-		JobExecution answer = null;
-		
-		// trying to retrieve job
-
-		Job job = null;
-
-		try {
-			job = jobRegistry.getJob(Long.toString(workflowExecution.getWorkflow().getId()));
-		} catch (NoSuchJobException e) {
-			Utils.logError(log, e, "Unable to retrieve job using workflow id.");
-			throw e;
-		}
-
-		// building job parameters
-
-		JobParameters jobParameters = Utils.buildJobParameter(workflowExecution);
-
-		// starting job execution
-
-		try {
-			answer = jobLauncher.run(job, jobParameters);
-		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
-				| JobParametersInvalidException e) {
-			Utils.logError(log, e, "Unable to start the workflow execution.");
-			throw e;
-		}
-		
-		return answer;
-	}
+	///////////////////////////////////////////////////////////
 
 	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
-	public WorkflowExecution queue(Workflow workflow, FileDataset fileDataset) 
+	public WorkflowExecution nullToQueue(Workflow workflow, FileDataset fileDataset) 
 			throws JobExecutionException {
 
-		// initializing entity in db
+		// initializing entity in db -- from id == null to Status.QUEUED
 		WorkflowExecution answer = new WorkflowExecution()
 				.setWorkflowService(this)
 				.setWorkflow(workflow)
@@ -305,11 +250,24 @@ public class WorkflowService {
 			throw e;
 		}
 
-		JobExecution jobExecution = startJobExecution(answer);
+		log.info("null to Q");
 		
-		answer = answer.setJobExecutionId(jobExecution.getId())
-				.setStatus(Status.RUNNING);
+		return answer;
+	}
+	
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	public WorkflowExecution queueToRunning(Long workflowExecutionId, Long JobExecutionId) 
+			throws JobExecutionException {
 
+		// initializing entity in db -- from Status.QUEUED to Status.RUNNING
+		WorkflowExecution answer = getWorkflowExecution(workflowExecutionId);
+
+		if (answer.getStatus() != WorkflowExecution.Status.QUEUED)
+			return null;
+		
+		answer.setStatus(Status.RUNNING)
+			.setJobExecutionId(JobExecutionId);
+		
 		try {
 			answer = workflowExecutionRepo.saveAndFlush(answer);
 		} catch (Exception e) {
@@ -317,51 +275,84 @@ public class WorkflowService {
 			throw e;
 		}
 
-		
+		log.info("q to r");
 		
 		return answer;
 	}
 	
 	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	public WorkflowExecution runningToDone(Long workflowExecutionId, boolean success) 
+			throws Exception {
+		WorkflowExecution answer = workflowExecutionRepo.findOne(workflowExecutionId);
+		
+		if (answer.getStatus() != WorkflowExecution.Status.RUNNING)
+			return null;
+		
+		if (success)
+			answer.setStatus(Status.SUCCESS);
+		else
+			answer.setStatus(Status.FAILED);
+		try {
+			answer = workflowExecutionRepo.save(answer);
+		} catch (Exception e) {
+			Utils.logError(log, e, "Unable to save new workflow execution status.");
+			throw e;
+		}
+
+		log.info("r to end");
+		
+		return answer;
+	}
+	
+	@Transactional(readOnly = true)
+	WorkflowExecution getWorkflowExecution(Long workflowExecutionId) {
+		if (workflowExecutionId == null
+				|| !workflowExecutionRepo.exists(workflowExecutionId))
+			return null;
+		
+		return workflowExecutionRepo.findOne(workflowExecutionId);
+	}
+	
+	@Transactional(readOnly = true)
+	String getWorkflowExecutionFileDatasetPath(Long workflowExecutionId) {
+		WorkflowExecution workflowExecution = getWorkflowExecution(workflowExecutionId);
+		if (workflowExecution == null
+				|| workflowExecution.getFileDataset() == null)
+			return null;
+		
+		return workflowExecution.getFileDataset().getPath();
+	}
+	
+	@Transactional(readOnly = true)
+	public WorkflowExecution getWorkflowExecution(WorkflowExecution workflowExecution) {
+		if (workflowExecution.getId() == null
+				|| !workflowExecutionRepo.exists(workflowExecution.getId()))
+			return null;
+		
+		return workflowExecutionRepo.findOne(workflowExecution.getId());
+	}
+	
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
 	public WorkflowExecution progress(WorkflowExecution workflowExecution, String output) {
-		
+
 		StringBuilder outputBuilder = new StringBuilder(workflowExecution.getOutput());
-		
+
 		outputBuilder = outputBuilder.append(System.lineSeparator()).append(output);
-		
+
 		if (outputBuilder.length() > Constants.MAX_OUTPUT_LENGTH)
 			outputBuilder.substring(outputBuilder.length() - Constants.MAX_OUTPUT_LENGTH + 1);
-		
+
 		workflowExecution.setOutput(outputBuilder.toString());
-		
+
 		try {
 			workflowExecution = workflowExecutionRepo.saveAndFlush(workflowExecution);
 		} catch (Exception e) {
 			Utils.logError(log, e, "Unable to save workflow execution status 'RUNNING'.");
 			throw e;
 		}
-		
+
 		return workflowExecution;
 	}
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
-	public WorkflowExecution finish(WorkflowExecution workflowExecution, boolean success, String output) 
-			throws Exception {
-		if (output.length() > Constants.MAX_OUTPUT_LENGTH)
-			output = output.substring(output.length() - Constants.MAX_OUTPUT_LENGTH + 1);
-		workflowExecution = workflowExecutionRepo.findOne(workflowExecution.getId());
-		workflowExecution.setOutput(output);
-		if (success)
-			workflowExecution.setStatus(Status.SUCCESS);
-		else
-			workflowExecution.setStatus(Status.FAILED);
-		try {
-			workflowExecution = workflowExecutionRepo.save(workflowExecution);
-		} catch (Exception e) {
-			Utils.logError(log, e, "Unable to save new workflow execution status.");
-			throw e;
-		}
-		
-		return workflowExecution;
-	}
+	
 }
