@@ -11,12 +11,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import org.mockito.internal.util.io.IOUtil;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 @Entity
 public class HelloTask extends Task{
@@ -112,10 +111,10 @@ public class HelloTask extends Task{
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			IOUtil.closeQuietly(pw);
-			IOUtil.closeQuietly(os);
-			IOUtil.closeQuietly(br);
-			IOUtil.closeQuietly(isr);
+			IOUtils.closeQuietly(pw);
+			IOUtils.closeQuietly(os);
+			IOUtils.closeQuietly(br);
+			IOUtils.closeQuietly(isr);
 		}
 		
 		return "Hello Task with " + language + " done.";

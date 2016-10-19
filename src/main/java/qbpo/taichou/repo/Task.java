@@ -44,7 +44,7 @@ public abstract class Task {
 	
 	@ManyToMany
 	@LazyCollection(LazyCollectionOption.FALSE)
-	List<FileDefinition> inputFileDefinitions;
+	protected List<FileDefinition> inputFileDefinitions;
 	
 	@ManyToMany
 	@LazyCollection(LazyCollectionOption.FALSE)

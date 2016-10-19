@@ -203,7 +203,7 @@ public class WorkflowServiceTest {
 		
 		Thread.sleep(10000L);
 		
-		workflowExecution = workflowService.getWorkflowExecution(workflowExecution.getId());
+		workflowExecution = workflowService.getWorkflowExecution(workflowExecution);
 		
 		log.info(workflowExecution);
 		log.info(workflowExecution.getOutput());
