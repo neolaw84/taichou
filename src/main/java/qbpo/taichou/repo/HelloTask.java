@@ -1,5 +1,13 @@
 package qbpo.taichou.repo;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +15,8 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+import org.mockito.internal.util.io.IOUtil;
 
 @Entity
 public class HelloTask extends Task{
@@ -45,12 +55,10 @@ public class HelloTask extends Task{
 	}
 	
 	@Override
-	//public Map<String, FileDefinition> guessOutputFileDefinitions() {
 	public List<FileDefinition> guessOutputFileDefinitions() { 
 		// We know this will output a single column excel csv
 		// We also know that there's only one inputFileDefinition
 		
-		//FileDefinition inputFileDefinition = inputFileDefinitions.get("names");
 		FileDefinition inputFileDefinition = inputFileDefinitions.get(0);
 		
 		List<String> columns = new ArrayList<>(1);
@@ -64,12 +72,52 @@ public class HelloTask extends Task{
 				.setName("hello_names_" + language + ".csv")
 				.setType(FileDefinition.Type.DENSE_EXCEL_CSV);
 		
+		List<FileDefinition> answer = new ArrayList<>(1);
 		
-		Map<String, FileDefinition> answer = new HashMap<>(1);
+		answer.add(outputFileDefinition);
 		
-		answer.put(language + "hello_names", outputFileDefinition);
+		return answer;
+	}
+
+	@Override
+	public String execute(List<String> inputFilePaths, List<String> outputFilePaths) {
+		String inputFilePath = inputFilePaths.get(0);
+		String outputFilePath = outputFilePaths.get(0);
 		
-		//return answer;
-		return new ArrayList<>(answer.values());
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		OutputStream os = null;
+		PrintWriter pw = null;
+		
+		String hello = "~!@#$%^&*()_+";
+		
+		if (language.equalsIgnoreCase("english"))
+			hello = "Hello";
+		else if (language.equalsIgnoreCase("japanese"))
+			hello = "Konichiwa";
+		
+		try {
+			isr = new InputStreamReader(new FileInputStream(inputFilePath));
+			br = new BufferedReader(isr);
+			
+			os = new FileOutputStream(outputFilePath);
+			pw = new PrintWriter(os);
+			
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				pw.println(String.join(" ", hello, line));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtil.closeQuietly(pw);
+			IOUtil.closeQuietly(os);
+			IOUtil.closeQuietly(br);
+			IOUtil.closeQuietly(isr);
+		}
+		
+		return "Hello Task with " + language + " done.";
 	}
 }

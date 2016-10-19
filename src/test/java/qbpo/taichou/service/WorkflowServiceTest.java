@@ -96,7 +96,7 @@ public class WorkflowServiceTest {
 		fileDataset.setDescription("File dataset to test Hello workflow");
 		fileDataset.setFileSchema(schema);
 		fileDataset.setName("Hello Dataset");
-		fileDataset.setPath("/media/sf_Shared/workspace/taichou/");
+		fileDataset.setPath("./HelloSchema/HelloDataset/");
 		
 		fileDataset = fileSchemaService.insertFileDataset(fileDataset);
 		
@@ -202,6 +202,11 @@ public class WorkflowServiceTest {
 		// need to wait until all jobs finished.
 		
 		Thread.sleep(10000L);
+		
+		workflowExecution = workflowService.getWorkflowExecution(workflowExecution.getId());
+		
+		log.info(workflowExecution);
+		log.info(workflowExecution.getOutput());
 	}
 
 }

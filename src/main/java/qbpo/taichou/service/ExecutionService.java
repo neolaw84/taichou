@@ -36,22 +36,22 @@ import qbpo.taichou.repo.WorkflowExecution;
 public class ExecutionService implements JobExecutionListener, StepExecutionListener{
 
 	private static final Log log = LogFactory.getLog(ExecutionService.class);
-	
+
 	@Autowired
 	private WorkflowService workflowService;
-	
+
 	////////////////////-- Batch -- //////////////////////////////////
 
 	@Autowired
 	private JobRegistry jobRegistry;
-	
+
 	@Autowired
 	private JobRepository jobRepository;
 
 	@Autowired
 	@Qualifier("asyncJobLauncher")
 	private JobLauncher jobLauncher;
-	
+
 	@Bean
 	public JobLauncher asyncJobLauncher() {
 		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
@@ -108,20 +108,18 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 		return answer;
 	}
 
-	
-
 	//////////////////////// -- Callbacks -- //////////////////////////////////////
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
-		
+
 		Long jobExecutionId = jobExecution.getId();
-		
+
 		String fileDatasetPath = workflowService.getWorkflowExecutionFileDatasetPath(workflowExecutionId);
-		
+
 		jobExecution.getExecutionContext().putString(Constants.FILE_DATASET_PATH, fileDatasetPath);
-		
+
 		try {
 			workflowService.queueToRunning(workflowExecutionId, jobExecutionId);
 		} catch (JobExecutionException e) {
@@ -133,7 +131,7 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
-		
+
 		try {
 			workflowService.runningToDone(workflowExecutionId, 
 					jobExecution.getExitStatus() == ExitStatus.COMPLETED);
@@ -145,13 +143,32 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 
 	@Override
 	public void beforeStep(StepExecution stepExecution) {
-		// TODO Auto-generated method stub
+		String toAppend = String.join("", 
+				"Step ", stepExecution.getStepName(), " has started.");
+		
+		Long workflowExecutionId = stepExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
 
+		try {
+			workflowService.progress(workflowExecutionId, toAppend);
+		} catch (Exception e) {
+			Utils.logError(log, e, "Something wrong in beforeStep aspect.");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
-		// TODO Auto-generated method stub
+		String toAppend = stepExecution.getExecutionContext().getString(Constants.STEP_OUTPUT);
+		
+		Long workflowExecutionId = stepExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
+
+		try {
+			workflowService.progress(workflowExecutionId, toAppend);
+		} catch (Exception e) {
+			Utils.logError(log, e, "Something wrong in afterStep aspect.");
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 

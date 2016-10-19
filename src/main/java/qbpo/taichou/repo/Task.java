@@ -82,8 +82,6 @@ public abstract class Task {
 		this.fileSchema = fileSchema;
 	}
 	
-	public abstract Op getOp();
-	
 	public List<FileDefinition> getInputFileDefinitions() {
 		return inputFileDefinitions;
 	}
@@ -99,6 +97,10 @@ public abstract class Task {
 	public void setOutputFileDefinitions(List<FileDefinition> outputFileDefinitions) {
 		this.outputFileDefinitions = outputFileDefinitions;
 	}
+	
+	public abstract Op getOp();
 
 	public abstract List<FileDefinition> guessOutputFileDefinitions();
+	
+	public abstract String execute(List<String> inputFilePaths, List<String> outputFilePaths);
 }

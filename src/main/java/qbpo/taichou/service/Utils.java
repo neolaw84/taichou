@@ -43,7 +43,7 @@ public class Utils {
 
 		//int engineSequence = 0;
 		for (Task task : tasks) {
-			Step step = buildStep(task, stepBuilderFactory); // get a step
+			Step step = buildStep(task, stepBuilderFactory, executionService); // get a step
 
 			if (sjb == null)
 				sjb = jBuilder.start(step);
@@ -58,9 +58,10 @@ public class Utils {
 		return j;
 	}
 
-	static Step buildStep(Task task, StepBuilderFactory stepBuilderFactory) {
-		return stepBuilderFactory.get(Long.toString(task.getId()))
-				.tasklet(new TaskStep())
+	static Step buildStep(Task task, StepBuilderFactory stepBuilderFactory, ExecutionService executionService) {
+		return stepBuilderFactory.get(Long.toString(task.getId()) + "-" + Long.toString(System.currentTimeMillis()))
+				.tasklet(new TaskStep().setTask(task))
+				.listener(executionService)
 		.build();
 	}
 

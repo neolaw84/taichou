@@ -6,3 +6,4 @@ target/
 *.jar
 .factorypath
 **/Sandbox.java
+/.apt_generated/

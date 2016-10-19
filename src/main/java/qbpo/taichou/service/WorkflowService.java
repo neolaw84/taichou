@@ -304,6 +304,25 @@ public class WorkflowService {
 		return answer;
 	}
 	
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	public WorkflowExecution progress(Long workflowExecutionId, String output) {
+
+		WorkflowExecution answer = workflowExecutionRepo.findOne(workflowExecutionId);
+		
+		String newOutput = Utils.appendAndTail(answer.getOutput(), output, Constants.MAX_OUTPUT_LENGTH);
+		
+		answer.setOutput(newOutput);
+
+		try {
+			answer = workflowExecutionRepo.saveAndFlush(answer);
+		} catch (Exception e) {
+			Utils.logError(log, e, "Unable to save additional workflow outputs.");
+			throw e;
+		}
+
+		return answer;
+	}
+	
 	@Transactional(readOnly = true)
 	WorkflowExecution getWorkflowExecution(Long workflowExecutionId) {
 		if (workflowExecutionId == null
@@ -331,28 +350,5 @@ public class WorkflowService {
 		
 		return workflowExecutionRepo.findOne(workflowExecution.getId());
 	}
-	
-	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
-	public WorkflowExecution progress(WorkflowExecution workflowExecution, String output) {
-
-		StringBuilder outputBuilder = new StringBuilder(workflowExecution.getOutput());
-
-		outputBuilder = outputBuilder.append(System.lineSeparator()).append(output);
-
-		if (outputBuilder.length() > Constants.MAX_OUTPUT_LENGTH)
-			outputBuilder.substring(outputBuilder.length() - Constants.MAX_OUTPUT_LENGTH + 1);
-
-		workflowExecution.setOutput(outputBuilder.toString());
-
-		try {
-			workflowExecution = workflowExecutionRepo.saveAndFlush(workflowExecution);
-		} catch (Exception e) {
-			Utils.logError(log, e, "Unable to save workflow execution status 'RUNNING'.");
-			throw e;
-		}
-
-		return workflowExecution;
-	}
-
 	
 }
