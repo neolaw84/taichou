@@ -43,6 +43,21 @@ public class TaskStep implements Tasklet {
 		return answer;
 	}
 
+	public List<String> getFilePaths(String fileDatasetPath, List<FileDefinition> fileDefinitions) {
+		List<String> answer = new ArrayList<>(fileDefinitions.size());
+
+		for (FileDefinition fileDefinition : fileDefinitions) {
+
+			String fileExtension = getExtension(fileDefinition);
+
+			String filePath = String.join("", 
+					fileDatasetPath, "/", fileDefinition.getName(), fileExtension);
+
+			answer.add(filePath);
+		}
+		return answer;
+	}
+	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -50,44 +65,25 @@ public class TaskStep implements Tasklet {
 		
 		StepContext stepContext = chunkContext.getStepContext();
 
-		if (!stepContext.getJobExecutionContext().containsKey(Constants.FILE_DATASET_PATH)) {
+		if (!stepContext.getJobExecutionContext().containsKey(Constants.BATCH_KEY_FILE_DATASET_PATH)) {
 			throw Utils.createAndLogError(log, "File dataset path not found in job execution context.");
 		}
 
-		String fileDatasetPath = stepContext.getJobExecutionContext().get(Constants.FILE_DATASET_PATH).toString();
+		String fileDatasetPath = stepContext.getJobExecutionContext().get(Constants.BATCH_KEY_FILE_DATASET_PATH).toString();
 
 		// arrange data to be passed to Task
 		
-		List<String> inputFilePaths = new ArrayList<>(task.getInputFileDefinitions().size());
+		List<String> inputFilePaths = getFilePaths(fileDatasetPath, task.getInputFileDefinitions());
 
-		for (FileDefinition fileDefinition : task.getInputFileDefinitions()) {
+		List<String> outputFilePaths = getFilePaths(fileDatasetPath, task.getOutputFileDefinitions());
 
-			String fileExtension = this.getExtension(fileDefinition);
-
-			String filePath = String.join("", 
-					fileDatasetPath, "/", fileDefinition.getName(), fileExtension);
-
-			inputFilePaths.add(filePath);
-		}
-
-		List<String> outputFilePaths = new ArrayList<>(task.getOutputFileDefinitions().size());
-
-		for (FileDefinition fileDefinition : task.getOutputFileDefinitions()) {
-			String fileExtension = this.getExtension(fileDefinition);
-
-			String filePath = String.join("", 
-					fileDatasetPath, "/", fileDefinition.getName(), fileExtension);
-
-			outputFilePaths.add(filePath);
-		}
-		
 		// finish task; get output
 		
 		String output = task.execute(inputFilePaths, outputFilePaths);
 
 		// put output to step context
 		
-		stepContext.getStepExecution().getExecutionContext().putString(Constants.STEP_OUTPUT, output);
+		stepContext.getStepExecution().getExecutionContext().putString(Constants.BATCH_KEY_STEP_OUTPUT, output);
 		
 		//stepContext.getStepExecutionContext().put(Constants.STEP_OUTPUT, output);
 		

@@ -24,31 +24,35 @@ public class Op {
 		return name;
 	}
 
-	public void setName(String name) {
+	public Op setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public Op setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	public String getTaskClassName() {
 		return taskClassName;
 	}
 
-	public void setTaskClassName(String className) {
+	public Op setTaskClassName(String className) {
 		this.taskClassName = className;
+		return this;
 	}
 
 	public Map<String, String> getNotes() {
 		return notes;
 	}
 
-	public void setNotes(Map<String, String> notes) {
+	public Op setNotes(Map<String, String> notes) {
 		this.notes = notes;
+		return this;
 	}
 }

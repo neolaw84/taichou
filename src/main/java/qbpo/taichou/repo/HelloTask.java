@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 

@@ -112,13 +112,13 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
+		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID);
 
 		Long jobExecutionId = jobExecution.getId();
 
 		String fileDatasetPath = workflowService.getWorkflowExecutionFileDatasetPath(workflowExecutionId);
 
-		jobExecution.getExecutionContext().putString(Constants.FILE_DATASET_PATH, fileDatasetPath);
+		jobExecution.getExecutionContext().putString(Constants.BATCH_KEY_FILE_DATASET_PATH, fileDatasetPath);
 
 		try {
 			workflowService.queueToRunning(workflowExecutionId, jobExecutionId);
@@ -130,7 +130,7 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
+		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID);
 
 		try {
 			workflowService.runningToDone(workflowExecutionId, 
@@ -146,7 +146,7 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 		String toAppend = String.join("", 
 				"Step ", stepExecution.getStepName(), " has started.");
 		
-		Long workflowExecutionId = stepExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
+		Long workflowExecutionId = stepExecution.getJobParameters().getLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID);
 
 		try {
 			workflowService.progress(workflowExecutionId, toAppend);
@@ -158,9 +158,9 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
-		String toAppend = stepExecution.getExecutionContext().getString(Constants.STEP_OUTPUT);
+		String toAppend = stepExecution.getExecutionContext().getString(Constants.BATCH_KEY_STEP_OUTPUT);
 		
-		Long workflowExecutionId = stepExecution.getJobParameters().getLong(Constants.WORKFLOW_EXECUTION_ID);
+		Long workflowExecutionId = stepExecution.getJobParameters().getLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID);
 
 		try {
 			workflowService.progress(workflowExecutionId, toAppend);

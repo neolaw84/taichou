@@ -19,7 +19,7 @@ import javax.persistence.Table;
 import qbpo.taichou.Constants;
 
 @Entity
-@Table(indexes = {@Index(columnList = Constants.IND_FILE_SCHEMA)})
+@Table(indexes = {@Index(columnList = "file_schema_id")})
 public class Workflow {
 	
 	@Id
@@ -34,7 +34,7 @@ public class Workflow {
 	
 	@Enumerated(EnumType.STRING)
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
-	@JoinColumn(name = Constants.IND_FILE_SCHEMA)
+	@JoinColumn//(name = Constants.IND_FILE_SCHEMA)
 	FileSchema fileSchema;
 	
 	@ElementCollection(fetch = FetchType.EAGER)

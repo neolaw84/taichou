@@ -91,8 +91,8 @@ public class WorkflowService {
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
 	public void init() {
 
-		Reflections reflections = new Reflections(Constants.OP_PACKAGE);
-		log.debug(Constants.OP_PACKAGE);
+		Reflections reflections = new Reflections(constants.OP_PACKAGE);
+		log.debug(constants.OP_PACKAGE);
 		Set<Class<? extends Task>> taskClasses = reflections.getSubTypesOf(Task.class);
 		WorkflowService.ops = new LinkedHashMap<>(taskClasses.size());
 		for (Class<? extends Task> cl : taskClasses) {

@@ -37,11 +37,11 @@ public class FileSchema {
 	String name;
 	
 	@Enumerated(EnumType.STRING)
-	@OneToMany(mappedBy = Constants.FK_FILE_SCHEMA, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = Constants.MAPPED_BY_FILE_SCHEMA, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	Set<FileDefinition> fileDefinitions;
 	
 	@Enumerated(EnumType.STRING)
-	@OneToMany(mappedBy = Constants.FK_FILE_SCHEMA, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = Constants.MAPPED_BY_FILE_SCHEMA, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	Set<FileDataset> fileDatasets;
 	
 	@Column(length = Constants.MAX_DESCRIPTION_LENGTH)

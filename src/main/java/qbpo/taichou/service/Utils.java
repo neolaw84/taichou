@@ -69,8 +69,8 @@ public class Utils {
 		JobParametersBuilder jobParameterBuilder = new JobParametersBuilder();
 
 		JobParameters answer = jobParameterBuilder
-				.addLong(Constants.TIME_STAMP, System.currentTimeMillis())
-				.addLong(Constants.WORKFLOW_EXECUTION_ID, workflowExecution.getId())
+				.addLong(Constants.BATCH_KEY_TIME_STAMP, System.currentTimeMillis())
+				.addLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID, workflowExecution.getId())
 				.toJobParameters();
 		
 		return answer;
