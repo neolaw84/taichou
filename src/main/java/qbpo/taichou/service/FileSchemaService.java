@@ -1,5 +1,7 @@
 package qbpo.taichou.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qbpo.taichou.repo.FileDataset;
 import qbpo.taichou.repo.FileDatasetRepo;
@@ -214,5 +218,20 @@ public class FileSchemaService {
 		fileDataset = fileDatasetRepo.findOne(fileDataset.getId());
 		
 		return fileDataset;
+	}
+	
+	@Autowired
+	ObjectMapper jacksonObjectMapper;
+	
+	@Transactional(readOnly = true)
+	public void backup(String fileName) throws Exception{
+		List<FileSchema> fileSchemas = this.getFileSchemas();
+		
+		try {
+			jacksonObjectMapper.writeValue(new File(fileName), fileSchemas);
+		} catch (IOException e) {
+			Utils.logError(log, e, "Something wrong with backup.");
+			throw e;
+		}
 	}
 }

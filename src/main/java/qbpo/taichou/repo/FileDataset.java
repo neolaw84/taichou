@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import qbpo.taichou.Constants;
 
 @Entity
@@ -42,6 +44,7 @@ public class FileDataset {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
+	@JsonIgnore
 	FileSchema fileSchema;
 
 	public Long getId() {

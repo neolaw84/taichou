@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import qbpo.taichou.Constants;
 
 @Entity
@@ -35,6 +37,7 @@ public class Workflow {
 	@Enumerated(EnumType.STRING)
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn//(name = Constants.IND_FILE_SCHEMA)
+	@JsonIgnore
 	FileSchema fileSchema;
 	
 	@ElementCollection(fetch = FetchType.EAGER)

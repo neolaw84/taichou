@@ -1,5 +1,7 @@
 package qbpo.taichou.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qbpo.taichou.Constants;
 import qbpo.taichou.repo.FileDataset;
+import qbpo.taichou.repo.FileSchema;
 import qbpo.taichou.repo.Op;
 import qbpo.taichou.repo.Task;
 import qbpo.taichou.repo.TaskRepo;
@@ -232,6 +235,11 @@ public class WorkflowService {
 		Workflow answer = workflowRepo.findOne(workflow.getId());
 		return answer;
 	}
+	
+	@Transactional(readOnly = true) 
+	public List<Workflow> getWorkflows() {
+		return workflowRepo.findAll();
+	}
 
 	///////////////////////////////////////////////////////////
 
@@ -328,6 +336,11 @@ public class WorkflowService {
 	}
 	
 	@Transactional(readOnly = true)
+	List<WorkflowExecution> getWorkflowExecutions() {
+		return workflowExecutionRepo.findAll();
+	}
+	
+	@Transactional(readOnly = true)
 	WorkflowExecution getWorkflowExecution(Long workflowExecutionId) {
 		if (workflowExecutionId == null
 				|| !workflowExecutionRepo.exists(workflowExecutionId))
@@ -355,4 +368,27 @@ public class WorkflowService {
 		return workflowExecutionRepo.findOne(workflowExecution.getId());
 	}
 	
+	@Transactional(readOnly = true)
+	public void backupWorkflows(String fileName) throws Exception{
+		List<Workflow> workflows = this.getWorkflows();
+		
+		try {
+			jacksonObjectMapper.writeValue(new File(fileName), workflows);
+		} catch (IOException e) {
+			Utils.logError(log, e, "Something wrong with backup.");
+			throw e;
+		}
+	}
+	
+	@Transactional(readOnly = true)
+	public void backupWorkflowExecutions(String fileName) throws Exception{
+		List<WorkflowExecution> workflowExecutions = this.getWorkflowExecutions();
+		
+		try {
+			jacksonObjectMapper.writeValue(new File(fileName), workflowExecutions);
+		} catch (IOException e) {
+			Utils.logError(log, e, "Something wrong with backup.");
+			throw e;
+		}
+	}
 }

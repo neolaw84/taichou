@@ -207,6 +207,9 @@ public class WorkflowServiceTest {
 		
 		log.info(workflowExecution);
 		log.info(workflowExecution.getOutput());
+		
+		workflowService.backupWorkflows("workflows.json");
+		workflowService.backupWorkflowExecutions("workflowExecutions.json");
 	}
 
 }

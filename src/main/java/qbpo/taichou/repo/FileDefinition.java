@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import qbpo.taichou.Constants;
 
 @Entity
@@ -58,6 +60,7 @@ public class FileDefinition {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
+	@JsonIgnore
 	FileSchema fileSchema;
 	
 	public static enum Type {

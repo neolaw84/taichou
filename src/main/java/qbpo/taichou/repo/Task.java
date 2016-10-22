@@ -19,6 +19,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @Entity
@@ -40,6 +41,7 @@ public abstract class Task {
 	
 	@Enumerated(EnumType.STRING)
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@JsonIgnore
 	FileSchema fileSchema;
 	
 	@ManyToMany
