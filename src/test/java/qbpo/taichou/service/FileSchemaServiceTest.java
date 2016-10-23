@@ -1,5 +1,7 @@
 package qbpo.taichou.service;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ public class FileSchemaServiceTest {
 		
 		schema.setName("Test Schema");
 		schema.setDescription("Test Description");
+		//schema.setId(1L);
 		
 		schema = fileSchemaService.insertFileSchema(schema);
 		
@@ -65,5 +68,20 @@ public class FileSchemaServiceTest {
 		
 		for (FileDefinition d : schema.getFileDefinitions())
 			System.out.println(d);
+		
+		FileSchema fileSchema2 = fileSchemaService.createNewFileSchema();
+		fileSchema2.setName("New one");
+		
+		fileSchema2 = fileSchemaService.insertFileSchema(fileSchema2);
+		
+		List<FileSchema> schemas = fileSchemaService.getFileSchemas();
+		
+		for (FileSchema fs : schemas) {
+			System.out.println(fs);
+		}
+		
+		FileDefinition fd = fileSchemaService.getFileDefinitionByNameAndSchema("New Def Name", schema);
+		
+		System.out.println(fd);
 	}
 }

@@ -145,6 +145,26 @@ public class FileSchemaService {
 		
 		return fileDefinition;
 	}
+	
+	@Transactional(readOnly = true)
+	public FileDefinition getFileDefinitionByName(String name) {
+		if (name == null)
+			return null;
+		
+		FileDefinition fileDefinition = fileDefinitionRepo.findByName(name);
+		
+		return fileDefinition;
+	}
+	
+	@Transactional(readOnly = true)
+	public FileDefinition getFileDefinitionByNameAndSchema(String name, FileSchema schema) {
+		if (name == null)
+			return null;
+		
+		FileDefinition fileDefinition = fileDefinitionRepo.findByNameAndFileSchema(name, schema);
+		
+		return fileDefinition;
+	}
 
 	public FileDataset createNewFileDataset(FileSchema fileSchema) {
 		return FileDataset.newInstance(fileSchema);
