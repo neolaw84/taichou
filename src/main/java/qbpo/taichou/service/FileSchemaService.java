@@ -34,7 +34,7 @@ public class FileSchemaService {
 	@Autowired
 	FileDatasetRepo fileDatasetRepo;
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public List<FileSchema> getFileSchemas () {
 		List<FileSchema> answer = null;
 
@@ -52,7 +52,8 @@ public class FileSchemaService {
 		return FileSchema.newInstance();
 	}
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, 
+			transactionManager = "taichouTransactionManager")
 	public FileSchema insertFileSchema(FileSchema fileSchema) {
 
 		try {
@@ -65,7 +66,7 @@ public class FileSchemaService {
 		return fileSchema;
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public FileSchema getFileSchema(FileSchema fileSchema) {
 		if (fileSchema.getId() == null)
 			return null;
@@ -78,7 +79,8 @@ public class FileSchemaService {
 		return FileDefinition.newInstance(fileSchema);
 	}
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, 
+			transactionManager = "taichouTransactionManager")
 	public FileDefinition insertFileDefinition(FileDefinition fileDefinition) throws Exception  {
 		if (fileDefinition.getId() != null
 				&& fileDefinitionRepo.exists(fileDefinition.getId())) {
@@ -116,7 +118,7 @@ public class FileSchemaService {
 		return fileDefinition;
 	}
 
-	@Transactional(rollbackFor=Exception.class)
+	@Transactional(rollbackFor=Exception.class, transactionManager = "taichouTransactionManager")
 	public FileDefinition updateFileDefinition(FileDefinition fileDefinition) throws Exception {
 		if (!fileDefinitionRepo.exists(fileDefinition.getId())) {
 			Exception e = Utils.createAndLogError(log, "File Schema does not contains File Definition.");
@@ -136,7 +138,7 @@ public class FileSchemaService {
 		return fileDefinition;
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public FileDefinition getFileDefinition(FileDefinition fileDefinition) {
 		if (fileDefinition.getId() == null)
 			return null;
@@ -146,7 +148,7 @@ public class FileSchemaService {
 		return fileDefinition;
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public FileDefinition getFileDefinitionByName(String name) {
 		if (name == null)
 			return null;
@@ -156,7 +158,7 @@ public class FileSchemaService {
 		return fileDefinition;
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public FileDefinition getFileDefinitionByNameAndSchema(String name, FileSchema schema) {
 		if (name == null)
 			return null;
@@ -170,7 +172,7 @@ public class FileSchemaService {
 		return FileDataset.newInstance(fileSchema);
 	}
 
-	@Transactional(readOnly = false)
+	@Transactional(readOnly = false, transactionManager = "taichouTransactionManager")
 	public FileDataset insertFileDataset(FileDataset fileDataset) throws Exception {
 		if (fileDataset.getId() != null
 				&& fileDatasetRepo.exists(fileDataset.getId())) {
@@ -230,7 +232,7 @@ public class FileSchemaService {
 		return fileDataset;
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public FileDataset getFileDataset(FileDataset fileDataset) {
 		if (fileDataset.getId() == null)
 			return null;
@@ -243,7 +245,7 @@ public class FileSchemaService {
 	@Autowired
 	ObjectMapper jacksonObjectMapper;
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public void backup(String fileName) throws Exception{
 		List<FileSchema> fileSchemas = this.getFileSchemas();
 		

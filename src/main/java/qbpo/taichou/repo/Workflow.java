@@ -36,7 +36,7 @@ public class Workflow {
 	
 	@Enumerated(EnumType.STRING)
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
-	@JoinColumn//(name = Constants.IND_FILE_SCHEMA)
+	@JoinColumn(name = Constants.FK_FILE_SCHEMA_IN_WORKFLOW)
 	@JsonIgnore
 	FileSchema fileSchema;
 	

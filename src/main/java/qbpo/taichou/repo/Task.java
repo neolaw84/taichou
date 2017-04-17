@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
@@ -45,10 +46,12 @@ public abstract class Task {
 	FileSchema fileSchema;
 	
 	@ManyToMany
+	@JoinTable(name = "input_file_definitions")
 	@LazyCollection(LazyCollectionOption.FALSE)
-	protected List<FileDefinition> inputFileDefinitions;
+	List<FileDefinition> inputFileDefinitions;
 	
 	@ManyToMany
+	@JoinTable(name = "output_file_definitions")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	List<FileDefinition> outputFileDefinitions;
 	

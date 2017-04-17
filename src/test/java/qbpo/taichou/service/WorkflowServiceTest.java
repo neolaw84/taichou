@@ -128,6 +128,8 @@ public class WorkflowServiceTest {
 		
 		task.setOutputFileDefinitions(outFds);
 		task.setFileSchema(schema);
+		task.setName("task1");
+		task.setDescription("task1 description");
 		
 		//task = workflowService.insertTask(task);
 
@@ -157,6 +159,8 @@ public class WorkflowServiceTest {
 		
 		task2.setOutputFileDefinitions(outFds2);
 		task2.setFileSchema(schema);
+		task2.setName("task2");
+		task2.setDescription("task2 desc");
 		
 		//task2 = workflowService.insertTask(task2);
 		

@@ -91,7 +91,8 @@ public class WorkflowService {
 	Constants constants;
 	
 	@PostConstruct
-	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, 
+			transactionManager = "taichouTransactionManager")
 	public void init() {
 
 		Reflections reflections = new Reflections(constants.OP_PACKAGE);
@@ -120,7 +121,8 @@ public class WorkflowService {
 		// if initWorkflowExecution then read from file
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, 
+			transactionManager = "taichouTransactionManager")
 	public List<Op> getOps() {
 		List<Op> answer = new LinkedList<>(WorkflowService.ops.values());
 
@@ -147,7 +149,8 @@ public class WorkflowService {
 		return answer;
 	}
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, 
+			transactionManager = "taichouTransactionManager")
 	public Task insertTask(Task task) throws Exception {
 
 		if (task.getId() != null
@@ -167,7 +170,8 @@ public class WorkflowService {
 		return task; 
 	}
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, 
+			transactionManager = "taichouTransactionManager")
 	public Task updateTask(Task task) throws Exception {
 		if (task.getId() == null
 				|| !taskRepo.exists(task.getId())) {
@@ -183,7 +187,7 @@ public class WorkflowService {
 		return task;
 	}
 
-	@Transactional(readOnly = true) 
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager") 
 	public Task getTask(Task task) {
 		if (task.getId() == null)
 			return null;
@@ -191,7 +195,7 @@ public class WorkflowService {
 		return answer;
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public List<Task> getTasks() {
 		return taskRepo.findAll();
 	}
@@ -200,7 +204,8 @@ public class WorkflowService {
 		return new Workflow();
 	}
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, 
+			transactionManager = "taichouTransactionManager")
 	public Workflow insertWorkflow(Workflow workflow) throws Exception{
 		if (workflow.getId() != null
 				&& workflowRepo.exists(workflow.getId()))
@@ -227,7 +232,7 @@ public class WorkflowService {
 		return workflow;
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public Workflow getWorkflow(Workflow workflow) {
 		if (workflow.getId() == null)
 			return null;
@@ -236,14 +241,15 @@ public class WorkflowService {
 		return answer;
 	}
 	
-	@Transactional(readOnly = true) 
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager") 
 	public List<Workflow> getWorkflows() {
 		return workflowRepo.findAll();
 	}
 
 	///////////////////////////////////////////////////////////
 
-	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE, 
+			transactionManager = "taichouTransactionManager")
 	public WorkflowExecution nullToQueue(Workflow workflow, FileDataset fileDataset) 
 			throws JobExecutionException {
 
@@ -267,7 +273,8 @@ public class WorkflowService {
 		return answer;
 	}
 	
-	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE, 
+			transactionManager = "taichouTransactionManager")
 	public WorkflowExecution queueToRunning(Long workflowExecutionId, Long JobExecutionId) 
 			throws JobExecutionException {
 
@@ -292,7 +299,8 @@ public class WorkflowService {
 		return answer;
 	}
 	
-	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE, 
+			transactionManager = "taichouTransactionManager")
 	public WorkflowExecution runningToDone(Long workflowExecutionId, boolean success) 
 			throws Exception {
 		WorkflowExecution answer = workflowExecutionRepo.findOne(workflowExecutionId);
@@ -316,7 +324,8 @@ public class WorkflowService {
 		return answer;
 	}
 	
-	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
+	@Transactional(readOnly = false, rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE, 
+			transactionManager = "taichouTransactionManager")
 	public WorkflowExecution progress(Long workflowExecutionId, String output) {
 
 		WorkflowExecution answer = workflowExecutionRepo.findOne(workflowExecutionId);
@@ -335,12 +344,12 @@ public class WorkflowService {
 		return answer;
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	List<WorkflowExecution> getWorkflowExecutions() {
 		return workflowExecutionRepo.findAll();
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	WorkflowExecution getWorkflowExecution(Long workflowExecutionId) {
 		if (workflowExecutionId == null
 				|| !workflowExecutionRepo.exists(workflowExecutionId))
@@ -349,7 +358,7 @@ public class WorkflowService {
 		return workflowExecutionRepo.findOne(workflowExecutionId);
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	String getWorkflowExecutionFileDatasetPath(Long workflowExecutionId) {
 		WorkflowExecution workflowExecution = getWorkflowExecution(workflowExecutionId);
 		if (workflowExecution == null
@@ -359,7 +368,7 @@ public class WorkflowService {
 		return workflowExecution.getFileDataset().getPath();
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public WorkflowExecution getWorkflowExecution(WorkflowExecution workflowExecution) {
 		if (workflowExecution.getId() == null
 				|| !workflowExecutionRepo.exists(workflowExecution.getId()))
@@ -368,7 +377,7 @@ public class WorkflowService {
 		return workflowExecutionRepo.findOne(workflowExecution.getId());
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public void backupWorkflows(String fileName) throws Exception{
 		List<Workflow> workflows = this.getWorkflows();
 		
@@ -380,7 +389,7 @@ public class WorkflowService {
 		}
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public void backupWorkflowExecutions(String fileName) throws Exception{
 		List<WorkflowExecution> workflowExecutions = this.getWorkflowExecutions();
 		

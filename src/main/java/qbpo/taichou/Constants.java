@@ -43,4 +43,7 @@ public class Constants {
 
 	@Value("${taichou.op.package:qbpo.taichou.repo}")
 	public String OP_PACKAGE = "qbpo.taichou.repo";
+	
+	@Value("${taichou.primary.package:qbpo.taichou.primary.repo}")
+	public String PRIMARY_PACKAGE = "qbpo.taichou.primary.repo";
 }
