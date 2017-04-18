@@ -48,7 +48,7 @@ public abstract class Task {
 	@ManyToMany
 	@JoinTable(name = "input_file_definitions")
 	@LazyCollection(LazyCollectionOption.FALSE)
-	List<FileDefinition> inputFileDefinitions;
+	protected List<FileDefinition> inputFileDefinitions;
 	
 	@ManyToMany
 	@JoinTable(name = "output_file_definitions")

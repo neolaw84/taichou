@@ -205,7 +205,7 @@ public class WorkflowServiceTest {
 		
 		// need to wait until all jobs finished.
 		
-		Thread.sleep(10000L);
+		Thread.sleep(7000L);
 		
 		workflowExecution = workflowService.getWorkflowExecution(workflowExecution);
 		

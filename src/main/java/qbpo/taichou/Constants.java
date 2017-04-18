@@ -37,13 +37,23 @@ public class Constants {
 
 	public static final String BATCH_KEY_TIME_STAMP = "time-stamp";
 
-	public static final String DEFAULT_FILE_DATASET_DIR = "/media/sf_Shared/workspace/dataset/";
+	public static final String DEFAULT_FILE_DATASET_DIR = "/media/sf_shared/workspace/dataset/";
 
 	public static final String BATCH_KEY_STEP_OUTPUT = "step-output";
 
-	@Value("${taichou.op.package:qbpo.taichou.repo}")
-	public String OP_PACKAGE = "qbpo.taichou.repo";
+	public static final String OP_PACKAGE_DEFAULT_VALUE = "qbpo.taichou.repo";
 	
-	@Value("${taichou.primary.package:qbpo.taichou.primary.repo}")
-	public String PRIMARY_PACKAGE = "qbpo.taichou.primary.repo";
+	public static final String OP_PACKAGE_EXPRESSION = "${taichou.op.package:" 
+			+ OP_PACKAGE_DEFAULT_VALUE + "}";
+	
+	public static final String PRIMARY_PACKAGE_DEFAULT_VALUE = "qbpo.taichou.primary.repo";
+	
+	public static final String PRIMARY_PACKAGE_EXPRESSION = "${taichou.primary.package:" 
+			+ PRIMARY_PACKAGE_DEFAULT_VALUE+ "}";
+	
+	@Value(Constants.OP_PACKAGE_EXPRESSION)
+	public String OP_PACKAGE = null;
+	
+	@Value(Constants.PRIMARY_PACKAGE_EXPRESSION)
+	public String PRIMARY_PACKAGE = null;
 }
