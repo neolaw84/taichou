@@ -1,5 +1,6 @@
 package qbpo.taichou.repo;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,8 +24,6 @@ public class FileDataset {
 		answer.path = Constants.DEFAULT_FILE_DATASET_DIR;
 		answer.description = "";
 		answer.fileSchema = fileSchema;
-		
-		//fileSchema.fileDatasets.add(answer);
 		
 		return answer;
 	}
@@ -59,24 +58,28 @@ public class FileDataset {
 		return name;
 	}
 
-	public void setName(String name) {
+	public FileDataset setName(String name) {
 		this.name = name;
+		
+		return this;
 	}
 
 	public String getPath() {
 		return path;
 	}
 
-	public void setPath(String path) {
+	public FileDataset setPath(String path) {
 		this.path = path;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public FileDataset setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	public FileSchema getFileSchema() {

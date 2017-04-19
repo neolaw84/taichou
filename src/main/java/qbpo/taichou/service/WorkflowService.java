@@ -2,6 +2,7 @@ package qbpo.taichou.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qbpo.taichou.Constants;
 import qbpo.taichou.repo.FileDataset;
-import qbpo.taichou.repo.FileSchema;
 import qbpo.taichou.repo.Op;
 import qbpo.taichou.repo.Task;
 import qbpo.taichou.repo.TaskRepo;
@@ -148,6 +148,30 @@ public class WorkflowService {
 
 		return answer;
 	}
+	
+	public Task createNewTaskWithNullFileFacilities(Op op) {
+		Task answer = null; 
+
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends Task> clazz = (Class<? extends Task>) Class.forName(op.getTaskClassName());
+
+			answer = clazz.newInstance();
+
+		} catch (ClassNotFoundException e) {
+			Utils.logError(log, e, "Class not found while creating new task of op : " + op);
+		} catch (InstantiationException e) {
+			Utils.logError(log, e, "Creating new task of op : " + op + " fails.");
+		} catch (IllegalAccessException e) {
+			Utils.logError(log, e, "Creating new task of op : " + op + " fails.");
+		} 
+		
+		answer.setFileSchema(null);
+		answer.setInputFileDefinitions(new ArrayList<>(1));
+		answer.setOutputFileDefinitions(new ArrayList<>(1));
+
+		return answer;
+	}
 
 	@Transactional(readOnly = false, rollbackFor = Exception.class, 
 			transactionManager = "taichouTransactionManager")
@@ -222,7 +246,9 @@ public class WorkflowService {
 			Job j = Utils.buildJob(workflow, jobBuilderFactory, 
 					jobRegistryBeanPostProcessor(), stepBuilderFactory,
 					executionService);
-
+			
+			log.info("Job " + j.getName() + " is built.");
+			
 		} catch (Exception e) {
 			Utils.logError(log, e, "Unable to insert workflow : " + workflow);
 			e.printStackTrace();

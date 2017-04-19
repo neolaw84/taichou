@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.engine.jdbc.env.spi.SchemaNameResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,61 @@ public class FileSchemaService {
 
 	@Autowired
 	FileDatasetRepo fileDatasetRepo;
+	
+	FileSchema nullSchema = null;
+	FileDataset nullDataset = null; 
+	
+	final CountDownLatch initDone = new CountDownLatch(1);
+	
+	@PostConstruct
+	@Transactional(readOnly = false, transactionManager = "taichouTransactionManager") 
+	public void init () {
+		FileSchema schema = FileSchema.newInstance()
+				.setName("Null Schema")
+				.setDescription("Null Schema for Tasks/Workflows that do not need file facilities.");
+		
+		schema = fileSchemaRepo.saveAndFlush(schema);
+		
+		FileDataset dataset = FileDataset.newInstance(schema)
+				.setName("Null Dataset")
+				.setPath("")
+				.setDescription("Null Dataset for Tasks/Workflows that do not need file facilities.");
+		
+		dataset = fileDatasetRepo.saveAndFlush(dataset);
+		
+		nullSchema = schema;
+		nullDataset = dataset;
+		
+		initDone.countDown();
+	}
+	
+	public FileSchema nullFileSchema() {
+		boolean error = false;
+		do {
+			try {
+				initDone.await();
+			} catch (InterruptedException e) {
+				log.error(e.getMessage());
+				error = true;
+			}
+		} while (error);
+		
+		return nullSchema;
+	}
+	
+	public FileDataset nullFileDataset() {
+		boolean error = false;
+		do {
+			try {
+				initDone.await();
+			} catch (InterruptedException e) {
+				log.error(e.getMessage());
+				error = true;
+			}
+		} while (error);
+		
+		return nullDataset;
+	}
 	
 	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public List<FileSchema> getFileSchemas () {

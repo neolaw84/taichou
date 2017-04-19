@@ -112,7 +112,8 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		Long workflowExecutionId = jobExecution.getJobParameters().getLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID);
+		Long workflowExecutionId = jobExecution.getJobParameters()
+				.getLong(Constants.BATCH_KEY_WORKFLOW_EXECUTION_ID);
 
 		Long jobExecutionId = jobExecution.getId();
 
