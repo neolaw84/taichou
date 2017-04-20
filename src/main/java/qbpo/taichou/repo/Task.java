@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -103,6 +102,7 @@ public abstract class Task {
 		this.outputFileDefinitions = outputFileDefinitions;
 	}
 	
+	@JsonIgnore
 	public abstract Op getOp();
 
 	public abstract List<FileDefinition> guessOutputFileDefinitions();

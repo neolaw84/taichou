@@ -1,8 +1,12 @@
 package qbpo.taichou;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @ComponentScan(basePackageClasses = {TaichouConfig.class})
@@ -12,4 +16,6 @@ import org.springframework.context.annotation.Import;
 })
 public class TaichouConfig {
 	//TODO include ConfigurationProperties to properly define all taichou prefixed properties
+	
+	
 }

@@ -104,7 +104,7 @@ public class ExecutionService implements JobExecutionListener, StepExecutionList
 		WorkflowExecution answer = workflowService.nullToQueue(workflow, fileDataset);
 
 		JobExecution jobExecution = startJobExecution(answer);
-
+		log.trace("Execution : " + jobExecution.getId() + " started.");
 		return answer;
 	}
 

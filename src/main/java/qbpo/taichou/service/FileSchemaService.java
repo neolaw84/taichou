@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.engine.jdbc.env.spi.SchemaNameResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +37,8 @@ public class FileSchemaService {
 	@Autowired
 	FileDatasetRepo fileDatasetRepo;
 	
-	FileSchema nullSchema = null;
-	FileDataset nullDataset = null; 
+	private FileSchema nullSchema = null;
+	private FileDataset nullDataset = null; 
 	
 	final CountDownLatch initDone = new CountDownLatch(1);
 	
@@ -47,12 +46,14 @@ public class FileSchemaService {
 	@Transactional(readOnly = false, transactionManager = "taichouTransactionManager") 
 	public void init () {
 		FileSchema schema = FileSchema.newInstance()
+				.setId(-999L)
 				.setName("Null Schema")
 				.setDescription("Null Schema for Tasks/Workflows that do not need file facilities.");
 		
 		schema = fileSchemaRepo.saveAndFlush(schema);
 		
 		FileDataset dataset = FileDataset.newInstance(schema)
+				.setId(-999L)
 				.setName("Null Dataset")
 				.setPath("")
 				.setDescription("Null Dataset for Tasks/Workflows that do not need file facilities.");
@@ -301,13 +302,10 @@ public class FileSchemaService {
 		return fileDataset;
 	}
 	
-	@Autowired
-	ObjectMapper jacksonObjectMapper;
-	
 	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public void backup(String fileName) throws Exception{
 		List<FileSchema> fileSchemas = this.getFileSchemas();
-		
+		ObjectMapper jacksonObjectMapper = new ObjectMapper();
 		try {
 			jacksonObjectMapper.writeValue(new File(fileName), fileSchemas);
 		} catch (IOException e) {

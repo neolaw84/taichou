@@ -8,5 +8,6 @@ target/
 .factorypath
 **/Sandbox.java
 /.apt_generated/
-
+./workflow.json
+./workflowExecutions.json
 

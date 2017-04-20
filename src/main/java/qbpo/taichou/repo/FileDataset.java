@@ -1,6 +1,5 @@
 package qbpo.taichou.repo;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -50,8 +49,9 @@ public class FileDataset {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public FileDataset setId(Long id) {
 		this.id = id;
+		return this;
 	}
 
 	public String getName() {

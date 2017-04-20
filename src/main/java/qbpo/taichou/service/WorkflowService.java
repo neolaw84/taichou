@@ -49,9 +49,6 @@ public class WorkflowService {
 	private static Map<String, Op> ops = null;
 
 	@Autowired
-	ObjectMapper jacksonObjectMapper;
-
-	@Autowired
 	TaskRepo taskRepo; 
 
 	@Autowired
@@ -113,12 +110,6 @@ public class WorkflowService {
 				Utils.logError(log, e, "Unable to register Op for Task: " + cl.getCanonicalName());
 			}
 		}
-
-		// if initTask then read from file
-
-		// if initWorkflow then read from file
-
-		// if initWorkflowExecution then read from file
 	}
 
 	@Transactional(readOnly = true, 
@@ -127,6 +118,10 @@ public class WorkflowService {
 		List<Op> answer = new LinkedList<>(WorkflowService.ops.values());
 
 		return answer;
+	}
+	
+	public Op getOp(String opClassName) {
+		return ops.get(opClassName);
 	}
 
 	public Task createNewTask(Op op) {
@@ -169,6 +164,7 @@ public class WorkflowService {
 		answer.setFileSchema(null);
 		answer.setInputFileDefinitions(new ArrayList<>(1));
 		answer.setOutputFileDefinitions(new ArrayList<>(1));
+		answer.setDescription("");
 
 		return answer;
 	}
@@ -406,7 +402,7 @@ public class WorkflowService {
 	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public void backupWorkflows(String fileName) throws Exception{
 		List<Workflow> workflows = this.getWorkflows();
-		
+		ObjectMapper jacksonObjectMapper = new ObjectMapper();
 		try {
 			jacksonObjectMapper.writeValue(new File(fileName), workflows);
 		} catch (IOException e) {
@@ -418,6 +414,8 @@ public class WorkflowService {
 	@Transactional(readOnly = true, transactionManager = "taichouTransactionManager")
 	public void backupWorkflowExecutions(String fileName) throws Exception{
 		List<WorkflowExecution> workflowExecutions = this.getWorkflowExecutions();
+		
+		ObjectMapper jacksonObjectMapper = new ObjectMapper();
 		
 		try {
 			jacksonObjectMapper.writeValue(new File(fileName), workflowExecutions);
